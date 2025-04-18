@@ -99,14 +99,14 @@ def load_coor(directories, fulldataset_csv, fulldata_settings, recalc = False, d
 def plot_y_data(df_full, y_names, datetime_name, filename = 'dataview_y'):
     plot_functions.view_data(df_full, y_names, y_names,  df_full[datetime_name].astype('datetime64[ns]').reset_index(drop=True), figname = filename)
 
-def calculate_log_for_y(df_y, y_name, fulldata_settings, log_y_filename, datetime_name, save_data = True, plot_data = True):
+def calculate_log_for_y(df_y, y_name, fulldata_settings, log_y_filename, datetime_name, save_data = True, plot_data = True, positive_factor = 6):
     log_y_name = "log_"+y_name
     # y_names = [i for i in df_full.columns if re.findall(r'^[a-z]_flux_', i)]  
     index = df_y[y_name] == 0 
-    df_y.loc[index, y_name] = 1e-5
+    df_y.loc[index, y_name] = 10**(-positive_factor+1)
 
     # Here we intergrated over for geomatrics and convert the unit  first and then take the log   np.log10(x*1e3*4*math.pi))
-    df_y[log_y_name] = np.log10(df_y[y_name])+6 #### Add a factor of 6 here to ensure all data are positive
+    df_y[log_y_name] = np.log10(df_y[y_name]) + positive_factor #### Add a factor of 6 here to ensure all data are positive
     
     fulldata_settings["y_names"].append(y_name)
     fulldata_settings["log_y_names"].append("log_"+y_name) #["log_" + str(x) for x in y_name]

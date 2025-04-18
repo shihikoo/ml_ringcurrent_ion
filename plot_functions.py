@@ -67,7 +67,7 @@ def plot_loss_function_history(history ,figname="tmp.png",ylim=0):
     # plt.show()
 
 def plot_loss_function_historys(total_history, para_set,para_str = '', figname="tmp.png",ylim=0, dataset_name='val_loss'):
-#     fig1 = plt.figure(figsize=(10, 8),facecolor='w')   
+    fig1 = plt.figure(figsize=(10, 8),facecolor='w')   
     for ihistory in range(len(total_history)):
         history = total_history[str(para_set[ihistory])]
         plt.plot(history[dataset_name], label =  para_str + '%s' % para_set[ihistory])
@@ -94,7 +94,7 @@ def factor_line_calculation(xrange, factor):
     yrangelow = [xrange[0] - np.log10(factor),xrange[1] - np.log10(factor)]
     return(yrange, yrangeup, yrangelow)
     
-def plot_correlation_heatmap(y_test_reshaped, y_test_pred_reshaped, xrange=[4,9],figname="tmp"):
+def plot_correlation_heatmap(y_test_reshaped, y_test_pred_reshaped, xrange=[4,9],figname="tmp", data_type =''):
     corr = r2_score(y_test_reshaped, y_test_pred_reshaped)
     mse_test1 = sum((y_test_pred_reshaped-y_test_reshaped)**2)/len(y_test_reshaped)
 
@@ -140,7 +140,7 @@ def plot_correlation_heatmap(y_test_reshaped, y_test_pred_reshaped, xrange=[4,9]
     ax1.set_ylabel("Predicted flux in log10",fontsize=20)
 
     plt.text(5,3.6,('R2: %(corr)5.3f' %{"corr": corr}),color='w',fontsize=20)
-    plt.text(5,2.5,('mse_test:%(mse_test)5.3f' %{"mse_test":mse_test1}),color='w',fontsize=20)
+    plt.text(5,2.5,('mse '+data_type+':%(mse_test)5.3f' %{"mse_test":mse_test1}),color='w',fontsize=20)
 
     # We change the fontsize of minor ticks label 
     ax1.tick_params(axis='both', which='major', labelsize=16)
@@ -152,6 +152,7 @@ def plot_correlation_heatmap(y_test_reshaped, y_test_pred_reshaped, xrange=[4,9]
     cbar=fig2.colorbar(im, ax=ax1)
     cbar.ax.tick_params(labelsize=16)
     cbar.set_label('# of 5-minute data', fontsize=20)
+    
     plt.savefig(figname+".png", format="png", dpi=300)
     # plt.show()
 
@@ -172,7 +173,7 @@ def plot_global_distributions(df_omni, models, exmaple_start_time,exmaple_end_ti
     tplot_names = ["SymH","AE","SWP","SWV"]
     pytplot.options(tplot_names, 'thick', 1.2)
     pytplot.timebar(time_double(cut_times), color='green', dash=True)
-
+    
     pytplot.tplot(tplot_names)
 
     mlt_example_grid = 0.1
@@ -482,11 +483,15 @@ def plot_tplot_and_global_distribution(df_omni, to_plot_omni_list, to_plot_omni_
     
     
 def plot_training_comparisons(para_set, para_name, valid_r2s, data_settings, directories):
-    plt.plot(np.array(para_set), valid_r2s, marker = 'o')
+    fig1 = plt.figure(figsize=(10, 8),facecolor='w')   
+
+    plt.scatter(np.array(para_set), valid_r2s, marker = 'o')
+    
     plt.title(para_name)
     plt.xlabel(data_settings["y_name"])
     plt.ylabel("Validation r2")
-    plt.savefig(directories["training_output_dir"]  + data_settings["y_name"]+'_'+para_name+'_r2.png', format="png", dpi=300)
+    
+    plt.savefig(directories["model_setting_compare_dir"]  + data_settings["y_name"]+'_'+para_name+'_r2.png', format="png", dpi=300)
     
     return True
    
